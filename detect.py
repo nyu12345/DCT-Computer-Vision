@@ -11,28 +11,25 @@ import numpy as np
 def reader(detector, img, file_name):
     tag_list = []
     global img2
+
     for y in range(0, img.shape[0], 350):
         for x in range(0, img.shape[1], 350):
-
             result, img2 = detector.detect(img[y:y + 450, x:x + 450], return_image=True)
-            if (len(result) != 0) and any(result) not in tag_list:
+            print(result)
+            if (len(result) != 0) and all(result) not in tag_list:
                 tag_list.append(result)
-                print(result)
                 cv2.imwrite("Outputs/"+file_name+".output.jpg", img2)
+    return tag_list
 
-def compareTag(apriltag, tagList):
-    for tag in tagList:
-        if apriltag["tag_family"] == tag["tag_family"] and apriltag["tag_id"] == tag["tag_id"]:
-            return True
-    return False
 
 if __name__ == '__main__':
     cap = cv2.VideoCapture(0)
-    det = apriltag.Detector()
+    detector = apriltag.Detector()
     directory = "data/Track 10-22/"
-    for file in os.listdir(directory):
-        print(file)
-        img = cv2.imread(directory+file, cv2.IMREAD_GRAYSCALE)
-        reader(det, img, file)
+    file = directory+"60_2.png"
+    print(file)
+    img = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+    tag_list = reader(detector, img, file)
+    print(tag_list)
     cap.release()
     cv2.destroyAllWindows()
